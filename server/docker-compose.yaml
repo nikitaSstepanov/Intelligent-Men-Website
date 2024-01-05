@@ -1,0 +1,71 @@
+version: '3.9'
+
+services:
+
+  db_posts_service:
+    container_name: "db_posts_service"
+    image: postgres:15.5-bullseye
+    environment:
+      POSTGRES_USER: ${POSTS_DB_USERNAME}
+      POSTGRES_PASSWORD: ${POSTS_DB_PASSWORD}
+      POSTGRES_DB: ${POSTS_DB_DATABASE}
+    volumes:
+      - ./posts_service/pgdata:/var/lib/postgresql/data
+    ports:
+      - ${POSTS_DB_PORT}:${POSTS_DB_PORT}
+  
+  #posts_service:
+  #  container_name: "posts_service"
+  #  build:
+  #    context: ./posts_service
+  #  env_file: 
+  #    - .env
+  #  depends_on: 
+  #    - db_posts_service
+  #  command: ["npm", "run", "start:prod"]
+
+  db_users_service:
+    container_name: "db_users_service"
+    image: postgres:15.5-bullseye
+    environment:
+      POSTGRES_USER: ${USERS_DB_USERNAME}
+      POSTGRES_PASSWORD: ${USERS_DB_PASSWORD}
+      POSTGRES_DB: ${USERS_DB_DATABASE}
+    volumes:
+      - ./users_service/pgdata:/var/lib/postgresql/data
+    ports:
+      - ${USERS_DB_PORT}:${USERS_DB_PORT}
+
+  #users_service:
+  #  container_name: "users_service"
+  #  build:
+  #    context: ./users_service
+  #  env_file:
+  #    - .env
+  #  depends_on:
+  #    - db_users_service
+  #  command: ["npm", "run", "start:prod"]
+
+  #mail_service:
+  #  container_name: "mail_service"
+  #  build:
+  #    context: ./mail_service
+  #  env_file:
+  #    - .env
+  #  command: ["npm", "run", "start:prod"]
+
+  #gateway:
+  # container_name: "gateway"
+  #  buid:
+  #    context: ./gateway
+  #  env_file:
+  #    - .env
+  #  depends_on:
+  #    - posts_service
+  #    - users_service
+  #    - mail_service
+  #  command: ["npm", "run", "start:prod"]
+
+volumes:
+  pgdata:
+  mysqldata:

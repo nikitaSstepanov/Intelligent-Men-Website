@@ -1,0 +1,3 @@
+type PostsArray = {
+    posts: Post[];
+};

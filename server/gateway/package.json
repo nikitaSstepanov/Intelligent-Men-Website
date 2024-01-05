@@ -1,0 +1,23 @@
+{
+  "name": "gateway",
+  "version": "1.1",
+  "description": "It is api gateway of IM website`s server",
+  "main": "app.js",
+  "scripts": {
+    "start:dev": "nodemon ./src/app.js",
+    "start:prod": "node ./src/app.js"
+  },
+  "author": "Kreativny",
+  "license": "ISC",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.9.2",
+    "@grpc/proto-loader": "^0.7.9",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

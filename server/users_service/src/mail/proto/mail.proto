@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package mail;
+
+service MailService {
+    rpc SendActivatonMessage (ActivationMessageData) returns (Empty);
+    rpc SendAdminRoleIsSettedMessage (AdminRoleIsSetedMessageData) returns (Empty);
+    rpc SendMemberRoleIsSettedMessage (MemberRoleIsSetedMessageData) returns (Empty);
+    rpc SendPostCreatedMessage (PostCreatedMessageData) returns (Empty);
+}
+
+message ActivationMessageData {
+    string email = 1;
+    string username = 2;
+    string url = 3;
+}
+
+message AdminRoleIsSetedMessageData {
+    string email = 1;
+    string username = 2;
+}
+
+message MemberRoleIsSetedMessageData {
+    string email = 1;
+    string username = 2;
+}
+
+message PostCreatedMessageData {
+    string title = 1;
+    string email = 2;
+}
+
+message Empty {}

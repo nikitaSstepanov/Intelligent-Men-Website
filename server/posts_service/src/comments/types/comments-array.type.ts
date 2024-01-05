@@ -1,0 +1,3 @@
+type CommentsArray = {
+    comments: CommentType[]
+};

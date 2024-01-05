@@ -12,7 +12,7 @@ services:
     volumes:
       - ./posts_service/pgdata:/var/lib/postgresql/data
     ports:
-      - ${POSTS_DB_PORT}:${POSTS_DB_PORT}
+      - ${POSTS_DB_PORT}:${POSTS_DB_INSIDE_PORT}
   
   #posts_service:
   #  container_name: "posts_service"
@@ -34,7 +34,7 @@ services:
     volumes:
       - ./users_service/pgdata:/var/lib/postgresql/data
     ports:
-      - ${USERS_DB_PORT}:${USERS_DB_PORT}
+      - ${USERS_DB_PORT}:${USERS_DB_INSIDE_PORT}
 
   #users_service:
   #  container_name: "users_service"
@@ -54,6 +54,18 @@ services:
   #    - .env
   #  command: ["npm", "run", "start:prod"]
 
+  db_files_service:
+    container_name: "db_files_service"
+    image: postgres:15.5-bullseye
+    environment:
+      POSTGRES_USER: ${FILES_DB_USERNAME}
+      POSTGRES_PASSWORD: ${FILES_DB_PASSWORD}
+      POSTGRES_DB: ${FILES_DB_DATABASE}
+    volumes:
+      - ./files_service/pgdata:/var/lib/postgresql/data
+    ports:
+      - ${FILES_DB_PORT}:${FILES_DB_INSIDE_PORT}
+
   #gateway:
   # container_name: "gateway"
   #  buid:
@@ -68,4 +80,3 @@ services:
 
 volumes:
   pgdata:
-  mysqldata:

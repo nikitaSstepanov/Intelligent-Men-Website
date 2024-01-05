@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package files;
+
+service FilesService {
+    rpc SavePostFiles (PostFiles) returns (DirectoryName);
+    rpc SaveUserFiles (UserFiles) returns (DirectoryName);
+    rpc GetFilesNames (GetNamesForm) returns (FilesNames);
+    rpc GetFileName (GetNamesForm) returns (FileName);
+}
+
+message PostFiles {
+    string text = 1;
+    repeated File files = 2;
+}
+
+message FilesNames {
+    repeated string names = 1;
+}
+
+message FileName {
+    string name = 1;
+}
+
+message UserFiles {
+    string description = 1;
+    File profilePhoto = 2;
+}
+
+message DirectoryName {
+    string name = 1;
+}
+
+message GetNamesForm {
+    string mode = 1;
+    string filesDir = 2;
+}
+
+message File {
+    bytes file = 1;
+    string mimeType = 2;
+}
+
+message Empty {}

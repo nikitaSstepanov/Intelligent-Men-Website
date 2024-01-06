@@ -1,0 +1,3 @@
+type DirName = {
+    name: string,
+}

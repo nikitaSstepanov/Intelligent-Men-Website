@@ -1,0 +1,3 @@
+type Chunk = {
+    chunk: Buffer;
+}

@@ -1,0 +1,3 @@
+type BufferType = {
+    file: Buffer;
+}

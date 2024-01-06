@@ -3,20 +3,18 @@ syntax = "proto3";
 package files;
 
 service FilesService {
-    rpc SavePostFiles (PostFiles) returns (DirectoryName);
-    rpc SaveUserFiles (UserFiles) returns (DirectoryName);
-    rpc SaveCommentFiles (CommentFiles) returns (DirectoryName);
+    rpc SaveFiles (SaveFilesForm) returns (DirectoryName);
     rpc GetFilesNames (ModeAndName) returns (FilesNames);
-    rpc GetFileName (ModeAndName) returns (FileName);
     rpc UpdateDirectory (UpdateFilesForm) returns (Empty);
     rpc DeleteFiles (ModeAndName) returns (Empty);
     rpc SendFile (FilePath) returns (Buffer);
     rpc SendFileStream (FilePath) returns (stream Chunk);
 }
 
-message PostFiles {
-    string text = 1;
-    repeated File files = 2;
+message SaveFilesForm {
+    string mode = 1;
+    string text = 2;
+    repeated File files = 3;
 }
 
 message UpdateFilesForm {
@@ -27,22 +25,8 @@ message UpdateFilesForm {
     repeated string filesToDel = 5;
 }
 
-message CommentFiles {
-    string text = 1;
-    repeated File files = 2;
-}
-
 message FilesNames {
     repeated string names = 1;
-}
-
-message FileName {
-    string name = 1;
-}
-
-message UserFiles {
-    string description = 1;
-    File profilePhoto = 2;
 }
 
 message DirectoryName {

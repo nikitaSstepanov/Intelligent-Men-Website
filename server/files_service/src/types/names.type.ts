@@ -1,0 +1,3 @@
+type FilesNames = {
+    names: string,
+}

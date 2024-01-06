@@ -5,11 +5,29 @@ package files;
 service FilesService {
     rpc SavePostFiles (PostFiles) returns (DirectoryName);
     rpc SaveUserFiles (UserFiles) returns (DirectoryName);
-    rpc GetFilesNames (GetNamesForm) returns (FilesNames);
-    rpc GetFileName (GetNamesForm) returns (FileName);
+    rpc SaveCommentFiles (CommentFiles) returns (DirectoryName);
+    rpc GetFilesNames (ModeAndName) returns (FilesNames);
+    rpc GetFileName (ModeAndName) returns (FileName);
+    rpc UpdateDirectory (UpdateFilesForm) returns (Empty);
+    rpc DeleteFiles (ModeAndName) returns (Empty);
+    rpc SendFile (FilePath) returns (Buffer);
+    rpc SendFileStream (FilePath) returns (stream Chunk);
 }
 
 message PostFiles {
+    string text = 1;
+    repeated File files = 2;
+}
+
+message UpdateFilesForm {
+    string mode = 1;
+    string directory = 2;
+    string text = 3;
+    repeated File newFiles = 4;
+    repeated string filesToDel = 5;
+}
+
+message CommentFiles {
     string text = 1;
     repeated File files = 2;
 }
@@ -31,7 +49,7 @@ message DirectoryName {
     string name = 1;
 }
 
-message GetNamesForm {
+message ModeAndName {
     string mode = 1;
     string filesDir = 2;
 }
@@ -39,6 +57,18 @@ message GetNamesForm {
 message File {
     bytes file = 1;
     string mimeType = 2;
+}
+
+message FilePath {
+    string path = 1;
+}
+
+message Buffer {
+    bytes file = 1;
+}
+
+message Chunk {
+    bytes chunk = 1;
 }
 
 message Empty {}

@@ -1,3 +1,3 @@
 type FilesNames = {
-    names: string,
+    names: string[],
 }

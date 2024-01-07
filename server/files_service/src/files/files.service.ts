@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { IFilesService } from "./interfaces/files-service.interface";
 import { join, resolve } from "path";
-import { existsSync, mkdir, mkdirSync } from "fs";
+import { existsSync, mkdir, mkdirSync, writeFileSync } from "fs";
 import { InjectRepository } from "@nestjs/typeorm";
 import { FilesEntity } from "./entities/files.entity";
 import { Repository } from "typeorm";
@@ -10,6 +10,7 @@ import { ModeAndNameDto } from "./dto/mode-and-name.dto";
 import { UpdateFilesDto } from "./dto/update-files.dto";
 import { Observable } from "rxjs";
 import { FilePathDto } from "./dto/path.dto";
+import { v4 } from "uuid";
 
 @Injectable()
 export class FilesService implements IFilesService {
@@ -18,6 +19,8 @@ export class FilesService implements IFilesService {
         @InjectRepository(FilesEntity)
         private readonly filesRepository: Repository<FilesEntity>,
     ) {}
+
+    private startPath = resolve(__dirname, "..", "..", "files");
 
     async initialize(): Promise<void> {
         const initPath = resolve(__dirname, "..", "..", "files");
@@ -43,11 +46,48 @@ export class FilesService implements IFilesService {
     }
 
     async saveFiles(dto: SaveFilesDto): Promise<DirName> {
-        return;
-    }
+        const modePath = join(this.startPath, dto.mode);
+        const dirName = await this.generateName(modePath, "");
+        const dirPath = join(modePath, dirName);
+        mkdirSync(dirPath);
+        if (dto.text) {
+            writeFileSync(join(dirPath, "text.txt"), dto.text);
+        }
+        if (dto.files) {
+            mkdirSync(join(dirPath, "files"));
+            for (const file of dto.files) {
+                const extension = await this.getExtension(file.mimeType);
+                let fileType: string;
+                if (extension == ".mp4") {
+                    fileType = "v";
+                } else {
+                    fileType = "p";
+                }
+                const fileName = await this.generateName(join(dirPath, "files"), extension);
+                writeFileSync(join(dirPath, "files", fileName), file.file);
+                const newFile = new FilesEntity();
+                newFile.mode = dto.mode;
+                newFile.fileDir = dirName;
+                newFile.fileName = fileName;
+                newFile.fileType = fileType;
+                await this.filesRepository.save(newFile);
+            }
+        }
+        return { name: dirName };
+    } 
 
     async findFilesNames(dto: ModeAndNameDto): Promise<FilesNames> {
-        return;
+        const files = await this.filesRepository.find({
+            where: {
+                mode: dto.mode,
+                fileDir: dto.filesDir,
+            },
+        });
+        const result = { names: [] };
+        for (const file of files) {
+            result.names.push(`${dto.mode} ${dto.filesDir} ${file.fileType} ${file.fileName}`);
+        }
+        return result;
     }
 
     async updFiles(dto: UpdateFilesDto): Promise<Empty> {
@@ -66,8 +106,33 @@ export class FilesService implements IFilesService {
         return;
     }
 
-    private async GenerateName(path: string): Promise<string> {
-        return;
+    private async generateName(path: string, extension: string): Promise<string> {
+        let name = v4() + extension;
+        while (existsSync(join(path, name))) {
+            name = v4() + extension;
+        }
+        return name;
+    }
+
+    private async getExtension(mimeType: string): Promise<string> {
+        let extesion: string;
+        switch (mimeType) {
+            case "image/jpeg":
+                extesion = ".jpeg";
+                break;
+            case "image/png":
+                extesion = ".png";
+                break;
+            case "image/heic":
+                extesion = ".heic";
+                break;
+            case "video/mp4":
+                extesion = ".mp4";
+                break;
+            default:
+                break;
+        }
+        return extesion;
     }
 
 }

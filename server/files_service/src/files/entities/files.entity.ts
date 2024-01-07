@@ -15,4 +15,7 @@ export class FilesEntity {
     @Column()
     fileName: string;
 
+    @Column()
+    fileType: string;
+
 }

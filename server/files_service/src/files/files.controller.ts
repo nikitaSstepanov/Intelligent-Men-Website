@@ -19,7 +19,7 @@ export class FilesController implements IFilesController {
     }
 
     @GrpcMethod("FilesService", "GetFilesNames")
-    async getFilesNames(dto: ModeAndNameDto): Promise<FilesNames> {
+    async getFilesNames(dto: ModeAndNameDto): Promise<FilesIds> {
         return await this.filesService.findFilesNames(dto);
     }
 

@@ -1,14 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { IFilesService } from "./interfaces/files-service.interface";
 import { join, resolve } from "path";
-import { existsSync, mkdir, mkdirSync, writeFileSync } from "fs";
+import { createReadStream, existsSync, mkdir, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { InjectRepository } from "@nestjs/typeorm";
 import { FilesEntity } from "./entities/files.entity";
 import { Repository } from "typeorm";
 import { SaveFilesDto } from "./dto/save-files.dto";
 import { ModeAndNameDto } from "./dto/mode-and-name.dto";
 import { UpdateFilesDto } from "./dto/update-files.dto";
-import { Observable } from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { FilePathDto } from "./dto/path.dto";
 import { v4 } from "uuid";
 
@@ -56,54 +56,108 @@ export class FilesService implements IFilesService {
         if (dto.files) {
             mkdirSync(join(dirPath, "files"));
             for (const file of dto.files) {
-                const extension = await this.getExtension(file.mimeType);
-                let fileType: string;
-                if (extension == ".mp4") {
-                    fileType = "v";
-                } else {
-                    fileType = "p";
-                }
-                const fileName = await this.generateName(join(dirPath, "files"), extension);
-                writeFileSync(join(dirPath, "files", fileName), file.file);
-                const newFile = new FilesEntity();
-                newFile.mode = dto.mode;
-                newFile.fileDir = dirName;
-                newFile.fileName = fileName;
-                newFile.fileType = fileType;
-                await this.filesRepository.save(newFile);
+                await this.saveFile(file, dto.mode, dirPath, dirName);
             }
         }
         return { name: dirName };
     } 
 
-    async findFilesNames(dto: ModeAndNameDto): Promise<FilesNames> {
+    async findFilesNames(dto: ModeAndNameDto): Promise<FilesIds> {
         const files = await this.filesRepository.find({
             where: {
                 mode: dto.mode,
                 fileDir: dto.filesDir,
             },
         });
-        const result = { names: [] };
+        const result = { ids: [] };
         for (const file of files) {
-            result.names.push(`${dto.mode} ${dto.filesDir} ${file.fileType} ${file.fileName}`);
+            result.ids.push(String(file.id));
         }
         return result;
     }
 
     async updFiles(dto: UpdateFilesDto): Promise<Empty> {
+        const checkPaths = (dto.mode.includes("..")) || (dto.directory.includes(".."));
+        if (checkPaths) {
+            return {};
+        }
+        const dirPath = join(this.startPath, dto.mode, dto.directory);
+        if (dto.text) {
+            writeFileSync(join(dirPath, "text.txt"), dto.text);
+        }
+        if (dto.newFiles) {
+            if (!existsSync(join(dirPath, "files"))) {
+                mkdirSync(join(dirPath, "files"));
+            }
+            for (const file of dto.newFiles) {
+                await this.saveFile(file, dto.mode, dirPath, dto.directory);
+            }
+        }
+        if (dto.filesToDel) {
+            for (const file of dto.filesToDel) {
+                rmSync(join(dirPath, file));
+                const fileToDelete = await this.filesRepository.findOne({
+                    where: {
+                        mode: dto.mode,
+                        fileDir: dto.directory,
+                        fileName: file,
+                    },
+                });
+                await this.filesRepository.delete(fileToDelete.id);
+            }
+        }
         return {};
     }
 
     async delFiles(dto: ModeAndNameDto): Promise<Empty> {
+        const checkPaths = (dto.mode.includes("..")) || (dto.filesDir.includes(".."));
+        if (checkPaths) {
+            return {};
+        }
+        const dirPath = join(this.startPath, dto.mode, dto.filesDir);
+        rmSync(dirPath);
+        const filesToDel = await this.filesRepository.find({
+            where: {
+                mode: dto.mode,
+                fileDir: dto.filesDir,
+            },
+        });
+        for (const file of filesToDel) {
+            await this.filesRepository.delete(file.id);
+        }
         return {};
     }
 
     async sendFile(dto: FilePathDto): Promise<BufferType> {
-        return;
+        const filePath = dto.path.split(" ");
+        const modeName = filePath[0];
+        const dirName = filePath[1];
+        const fileName = filePath[3];
+        const checkPaths = (modeName.includes("..")) || (dirName.includes("..")) || (fileName.includes(".."));
+        if (checkPaths) {
+            return;
+        }
+        const pathToFile = join(this.startPath, modeName, dirName, "files", fileName);
+        const file = readFileSync(pathToFile);
+        const result = { file };
+        return result;
     }
 
     async sendFileStream(dto: FilePathDto): Promise<Observable<Chunk>> {
-        return;
+        const filePath = dto.path.split(" ");
+        const modeName = filePath[0];
+        const dirName = filePath[1];
+        const fileName = filePath[3];
+        const checkPaths = (modeName.includes("..")) || (dirName.includes("..")) || (fileName.includes(".."));
+        if (checkPaths) {
+            return;
+        }
+        const pathToFile = join(this.startPath, modeName, dirName, "files", fileName);
+        const subject = new Subject<Chunk>();
+        const stream = createReadStream(pathToFile);
+        stream.on("data", (chunk: Buffer) => subject.next({ chunk }));
+        stream.on("end", () => subject.complete());
+        return subject.asObservable();
     }
 
     private async generateName(path: string, extension: string): Promise<string> {
@@ -133,6 +187,24 @@ export class FilesService implements IFilesService {
                 break;
         }
         return extesion;
+    }
+
+    private async saveFile(file: FileType, mode: string, dirPath: string, dirName: string): Promise<void> {
+        const extension = await this.getExtension(file.mimeType);
+        let fileType: string;
+        if (extension == ".mp4") {
+            fileType = "v";
+        } else {
+            fileType = "p";
+        }
+        const fileName = await this.generateName(join(dirPath, "files"), extension);
+        writeFileSync(join(dirPath, "files", fileName), file.file);
+        const newFile = new FilesEntity();
+        newFile.mode = mode;
+        newFile.fileDir = dirName;
+        newFile.fileName = fileName;
+        newFile.fileType = fileType;
+        await this.filesRepository.save(newFile);
     }
 
 }

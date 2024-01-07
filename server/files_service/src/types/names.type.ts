@@ -1,3 +1,0 @@
-type FilesNames = {
-    names: string[],
-}

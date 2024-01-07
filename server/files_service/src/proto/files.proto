@@ -4,7 +4,7 @@ package files;
 
 service FilesService {
     rpc SaveFiles (SaveFilesForm) returns (DirectoryName);
-    rpc GetFilesNames (ModeAndName) returns (FilesNames);
+    rpc GetFilesIds (ModeAndName) returns (FilesIds);
     rpc UpdateDirectory (UpdateFilesForm) returns (Empty);
     rpc DeleteFiles (ModeAndName) returns (Empty);
     rpc SendFile (FilePath) returns (Buffer);
@@ -25,8 +25,8 @@ message UpdateFilesForm {
     repeated string filesToDel = 5;
 }
 
-message FilesNames {
-    repeated string names = 1;
+message FilesIds {
+    repeated string ids = 1;
 }
 
 message DirectoryName {

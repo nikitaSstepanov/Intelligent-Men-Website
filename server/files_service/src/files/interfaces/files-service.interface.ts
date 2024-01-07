@@ -7,7 +7,7 @@ import { UpdateFilesDto } from "../dto/update-files.dto";
 export interface IFilesService {
     initialize(): Promise<void>;
     saveFiles(dto: SaveFilesDto): Promise<DirName>;
-    findFilesNames(dto: ModeAndNameDto): Promise<FilesNames>;
+    findFilesNames(dto: ModeAndNameDto): Promise<FilesIds>;
     updFiles(dto: UpdateFilesDto): Promise<Empty>;
     delFiles(dto: ModeAndNameDto): Promise<Empty>;
     sendFile(dto: FilePathDto): Promise<BufferType>;

@@ -9,7 +9,13 @@
         "start": "nest start",
         "start:dev": "nest start --watch",
         "start:debug": "nest start --debug --watch",
-        "start:prod": "node dist/main"
+        "start:prod": "node dist/main",
+        "typeorm:migration:create": "npm run build && typeorm-ts-node-commonjs",
+        "typeorm": "npm run build && typeorm-ts-node-commonjs --dataSource ./src/config/ormconfig.ts",
+        "migration:create": "npm run typeorm:migration:create migration:create",
+        "migration:generate": "npm run typeorm migration:generate",
+        "migration:run": "npm run typeorm migration:run",
+        "migration:down": "npm run typeorm migration:revert"
     },
     "dependencies": {
         "@grpc/grpc-js": "^1.9.2",

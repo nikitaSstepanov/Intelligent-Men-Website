@@ -1,8 +1,8 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { resolve } from "path";
-import { FilesModule } from "./files/files.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { FilesModule } from "./files/files.module";
+import { resolve } from "path";
 
 @Module({
     imports: [

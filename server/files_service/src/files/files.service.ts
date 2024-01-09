@@ -1,15 +1,15 @@
 import { Injectable } from "@nestjs/common";
-import { IFilesService } from "./interfaces/files-service.interface";
-import { join, resolve } from "path";
-import { createReadStream, existsSync, mkdir, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { InjectRepository } from "@nestjs/typeorm";
-import { FilesEntity } from "./entities/files.entity";
 import { Repository } from "typeorm";
-import { SaveFilesDto } from "./dto/save-files.dto";
+import { FilesEntity } from "./entities/files.entity";
+import { IFilesService } from "./interfaces/files-service.interface";
+import { createReadStream, existsSync, mkdir, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { join, resolve } from "path";
 import { ModeAndNameDto } from "./dto/mode-and-name.dto";
+import { SaveFilesDto } from "./dto/save-files.dto";
 import { UpdateFilesDto } from "./dto/update-files.dto";
+import { FileIdDto } from "./dto/id.dto";
 import { Observable, Subject } from "rxjs";
-import { FilePathDto } from "./dto/path.dto";
 import { v4 } from "uuid";
 
 @Injectable()
@@ -29,6 +29,7 @@ export class FilesService implements IFilesService {
             mkdirSync(join(initPath, "posts"));
             mkdirSync(join(initPath, "users"));
             mkdirSync(join(initPath, "comments"));
+            mkdirSync(join(initPath, "content"));
         } else {
             if (!existsSync(join(initPath, "posts"))) { 
                 mkdirSync(join(initPath, "posts"));
@@ -43,6 +44,20 @@ export class FilesService implements IFilesService {
                 mkdirSync(join(initPath, "content"));
             }
         }
+    }
+
+    async findFilesIds(dto: ModeAndNameDto): Promise<FilesIds> {
+        const files = await this.filesRepository.find({
+            where: {
+                mode: dto.mode,
+                fileDir: dto.filesDir,
+            },
+        });
+        const result = { ids: [] };
+        for (const file of files) {
+            result.ids.push(String(file.id));
+        }
+        return result;
     }
 
     async saveFiles(dto: SaveFilesDto): Promise<DirName> {
@@ -62,20 +77,6 @@ export class FilesService implements IFilesService {
         return { name: dirName };
     } 
 
-    async findFilesNames(dto: ModeAndNameDto): Promise<FilesIds> {
-        const files = await this.filesRepository.find({
-            where: {
-                mode: dto.mode,
-                fileDir: dto.filesDir,
-            },
-        });
-        const result = { ids: [] };
-        for (const file of files) {
-            result.ids.push(String(file.id));
-        }
-        return result;
-    }
-
     async updFiles(dto: UpdateFilesDto): Promise<Empty> {
         const checkPaths = (dto.mode.includes("..")) || (dto.directory.includes(".."));
         if (checkPaths) {
@@ -94,15 +95,11 @@ export class FilesService implements IFilesService {
             }
         }
         if (dto.filesToDel) {
-            for (const file of dto.filesToDel) {
-                rmSync(join(dirPath, file));
+            for (const fileId of dto.filesToDel) {
                 const fileToDelete = await this.filesRepository.findOne({
-                    where: {
-                        mode: dto.mode,
-                        fileDir: dto.directory,
-                        fileName: file,
-                    },
+                    where: { id: Number(fileId) },
                 });
+                rmSync(join(dirPath, fileToDelete.fileName));
                 await this.filesRepository.delete(fileToDelete.id);
             }
         }
@@ -128,31 +125,21 @@ export class FilesService implements IFilesService {
         return {};
     }
 
-    async sendFile(dto: FilePathDto): Promise<BufferType> {
-        const filePath = dto.path.split(" ");
-        const modeName = filePath[0];
-        const dirName = filePath[1];
-        const fileName = filePath[3];
-        const checkPaths = (modeName.includes("..")) || (dirName.includes("..")) || (fileName.includes(".."));
-        if (checkPaths) {
-            return;
-        }
-        const pathToFile = join(this.startPath, modeName, dirName, "files", fileName);
-        const file = readFileSync(pathToFile);
-        const result = { file };
+    async sendFile(dto: FileIdDto): Promise<BufferType> {
+        const file = await this.filesRepository.findOne({
+            where: { id: Number(dto.id) },
+        });
+        const pathToFile = join(this.startPath, file.mode, file.fileDir, "files", file.fileName);
+        const fileBuffer = readFileSync(pathToFile);
+        const result = { file: fileBuffer };
         return result;
     }
 
-    async sendFileStream(dto: FilePathDto): Promise<Observable<Chunk>> {
-        const filePath = dto.path.split(" ");
-        const modeName = filePath[0];
-        const dirName = filePath[1];
-        const fileName = filePath[3];
-        const checkPaths = (modeName.includes("..")) || (dirName.includes("..")) || (fileName.includes(".."));
-        if (checkPaths) {
-            return;
-        }
-        const pathToFile = join(this.startPath, modeName, dirName, "files", fileName);
+    async sendFileStream(dto: FileIdDto): Promise<Observable<Chunk>> {
+        const file = await this.filesRepository.findOne({
+            where: { id: Number(dto.id) },
+        });
+        const pathToFile = join(this.startPath, file.mode, file.fileDir, "files", file.fileName);
         const subject = new Subject<Chunk>();
         const stream = createReadStream(pathToFile);
         stream.on("data", (chunk: Buffer) => subject.next({ chunk }));

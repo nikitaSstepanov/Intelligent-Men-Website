@@ -1,26 +1,26 @@
 import { Controller } from "@nestjs/common";
+import { GrpcMethod } from "@nestjs/microservices";
 import { IFilesController } from "./interfaces/files-controller.interface";
 import { FilesService } from "./files.service";
-import { GrpcMethod } from "@nestjs/microservices";
-import { SaveFilesDto } from "./dto/save-files.dto";
 import { ModeAndNameDto } from "./dto/mode-and-name.dto";
+import { SaveFilesDto } from "./dto/save-files.dto";
 import { UpdateFilesDto } from "./dto/update-files.dto";
+import { FileIdDto } from "./dto/id.dto";
 import { Observable } from "rxjs";
-import { FilePathDto } from "./dto/path.dto";
 
 @Controller()
 export class FilesController implements IFilesController {
 
     constructor(private readonly filesService: FilesService) {}
 
+    @GrpcMethod("FilesService", "GetFilesIds")
+    async getFilesIds(dto: ModeAndNameDto): Promise<FilesIds> {
+        return await this.filesService.findFilesIds(dto);
+    }
+    
     @GrpcMethod("FilesService", "SaveFiles")
     async saveFiles(dto: SaveFilesDto): Promise<DirName> {
         return await this.filesService.saveFiles(dto);
-    }
-
-    @GrpcMethod("FilesService", "GetFilesNames")
-    async getFilesNames(dto: ModeAndNameDto): Promise<FilesIds> {
-        return await this.filesService.findFilesNames(dto);
     }
 
     @GrpcMethod("FilesService", "UpdateDirectory")
@@ -34,12 +34,12 @@ export class FilesController implements IFilesController {
     }
 
     @GrpcMethod("FilesService", "SendFile")
-    async sendFile(dto: FilePathDto): Promise<BufferType> {
+    async sendFile(dto: FileIdDto): Promise<BufferType> {
         return await this.filesService.sendFile(dto);
     }
 
     @GrpcMethod("FilesService", "SendFileStream")
-    async sendFileStream(dto: FilePathDto): Promise<Observable<Chunk>> {
+    async sendFileStream(dto: FileIdDto): Promise<Observable<Chunk>> {
         return await this.filesService.sendFileStream(dto);
     }
 

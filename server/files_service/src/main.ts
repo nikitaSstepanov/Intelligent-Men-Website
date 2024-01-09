@@ -1,8 +1,8 @@
 import { NestFactory } from "@nestjs/core";
 import { MicroserviceOptions, Transport } from "@nestjs/microservices";
 import { AppModule } from "./app.module";
-import { resolve } from "path";
 import { FilesService } from "./files/files.service";
+import { resolve } from "path";
 
 const URL = process.env.FILES_SERVICE_URL;
 

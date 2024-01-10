@@ -1,6 +1,6 @@
 import { Controller } from "@nestjs/common";
-import { IMailController } from "./interfaces/mail-controller.interface";
 import { GrpcMethod } from "@nestjs/microservices";
+import { IMailController } from "./interfaces/mail-controller.interface";
 import { MailService } from "./mail.service";
 import { ActivationDto } from "./dto/activation.dto";
 import { AdminRoleMessageDto } from "./dto/admin-role-msg.dto";

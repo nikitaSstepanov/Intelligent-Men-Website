@@ -4,7 +4,7 @@ import { MailService } from "./mail.service";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { ConfigService } from "@nestjs/config";
 import { config } from "dotenv";
-config({ path: "../.env" });
+config({ path: "../../.env" });
 
 const configService = new ConfigService();
 

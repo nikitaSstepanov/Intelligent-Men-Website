@@ -1,11 +1,12 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { MailModule } from "./mail/mail.module";
+import { resolve } from "path";
 
 @Module({
     imports: [
         ConfigModule.forRoot({
-            envFilePath: "../.env",
+            envFilePath: resolve(__dirname, "..", "..", "..", ".env"),
             isGlobal: true,
         }),
         MailModule,

@@ -3,7 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { FilesEntity } from "./entities/files.entity";
 import { IFilesService } from "./interfaces/files-service.interface";
-import { createReadStream, existsSync, mkdir, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+import { createReadStream, existsSync, mkdir, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "fs";
 import { join, resolve } from "path";
 import { ModeAndNameDto } from "./dto/mode-and-name.dto";
 import { SaveFilesDto } from "./dto/save-files.dto";
@@ -99,7 +99,7 @@ export class FilesService implements IFilesService {
                 const fileToDelete = await this.filesRepository.findOne({
                     where: { id: Number(fileId) },
                 });
-                rmSync(join(dirPath, fileToDelete.fileName));
+                rmSync(join(dirPath, "files", fileToDelete.fileName));
                 await this.filesRepository.delete(fileToDelete.id);
             }
         }
@@ -112,7 +112,7 @@ export class FilesService implements IFilesService {
             return {};
         }
         const dirPath = join(this.startPath, dto.mode, dto.filesDir);
-        rmSync(dirPath);
+        rmSync(dirPath, { recursive: true });
         const filesToDel = await this.filesRepository.find({
             where: {
                 mode: dto.mode,

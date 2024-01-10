@@ -3,3 +3,4 @@ server/**/dist
 **/.DS_Store
 server/**/pgdata
 server/files_service/files
+.env

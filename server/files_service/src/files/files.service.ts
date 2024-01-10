@@ -8,7 +8,7 @@ import { join, resolve } from "path";
 import { ModeAndNameDto } from "./dto/mode-and-name.dto";
 import { SaveFilesDto } from "./dto/save-files.dto";
 import { UpdateFilesDto } from "./dto/update-files.dto";
-import { FileIdDto } from "./dto/id.dto";
+import { FileIdDto } from "./dto/file-id.dto";
 import { Observable, Subject } from "rxjs";
 import { v4 } from "uuid";
 

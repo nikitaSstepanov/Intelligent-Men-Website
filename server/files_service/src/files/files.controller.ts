@@ -5,7 +5,7 @@ import { FilesService } from "./files.service";
 import { ModeAndNameDto } from "./dto/mode-and-name.dto";
 import { SaveFilesDto } from "./dto/save-files.dto";
 import { UpdateFilesDto } from "./dto/update-files.dto";
-import { FileIdDto } from "./dto/id.dto";
+import { FileIdDto } from "./dto/file-id.dto";
 import { Observable } from "rxjs";
 
 @Controller()

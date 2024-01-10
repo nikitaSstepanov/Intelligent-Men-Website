@@ -10,18 +10,18 @@ import { resolve } from "path";
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: "../.env",
+      envFilePath: "../../.env",
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: "postgres",
-        host: configService.get<string>("TYPEORM_POSTS_HOST"),
-        port: configService.get<number>("TYPEORM_POSTS_PORT"),
-        username: configService.get<string>("TYPEORM_POSTS_USERNAME"),
-        password: configService.get<string>("TYPEORM_POSTS_PASSWORD"),
-        database: configService.get<string>("TYPEORM_POSTS_DATABASE"),
+        host: configService.get<string>("POSTS_DB_HOST"),
+        port: configService.get<number>("POSTS_DB_PORT"),
+        username: configService.get<string>("POSTS_DB_USERNAME"),
+        password: configService.get<string>("POSTS_DB_PASSWORD"),
+        database: configService.get<string>("POSTS_DB_DATABASE"),
         synchronize: false,
         entities: [resolve(__dirname, "**", "entities", "*entity.ts")],
       }),

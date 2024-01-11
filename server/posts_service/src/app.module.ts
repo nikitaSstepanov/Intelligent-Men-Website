@@ -10,7 +10,7 @@ import { resolve } from "path";
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: "../../.env",
+      envFilePath: resolve(__dirname, "..", "..", "..", ".env"),
       isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({

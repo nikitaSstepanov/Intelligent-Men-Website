@@ -7,15 +7,13 @@ service PostsService {
   rpc FindAllPostsByTag (TagAndUserId) returns (PostsArray);
   rpc FindOnePost (PostIdAndUserId) returns (Post);
   rpc CreatePost (CreatePostForm) returns (Empty);
-  rpc UpdatePost (UpdatePostForm) returns (Empty);
-  rpc DeletePost (PostId) returns (Empty);
+  rpc UpdatePost (UpdatePostForm) returns (ContentDir);
+  rpc DeletePost (PostId) returns (ContentDir);
   rpc SendComments (PostIdAndUserId) returns (CommentsArray);
   rpc SendCommentAnswers (CommentIdAndUserId) returns (CommentsArray);
   rpc CreateComment (CreateCommentForm) returns (Empty);
-  rpc UpdateComment (UpdateCommentForm) returns (Empty);
-  rpc DeleteComment (CommentId) returns (Empty);
-  rpc SendPhoto (FilePath) returns (Photo);
-  rpc SendVideo (FilePath) returns (stream Video);
+  rpc UpdateComment (CommentId) returns (ContentDir);
+  rpc DeleteComment (CommentId) returns (ContentDir);
   rpc AddLikeToPost (PostIdAndUserId) returns (Empty);
   rpc RemoveLikeFromPost (PostIdAndUserId) returns (Empty);
   rpc AddLikeToComment (CommentIdAndUserId) returns (Empty);
@@ -25,13 +23,11 @@ service PostsService {
 message Post {
   string id = 1;
   string title = 2;
-  repeated string photos = 3;
-  repeated string videos = 4;
-  string text = 5;
-  string authorId = 6;
-  string likesNumber = 7;
-  string commentsNumber = 8;
-  bool isLiked = 9;
+  string contentDir = 3;
+  string authorId = 4;
+  string likesNumber = 5;
+  string commentsNumber = 6;
+  bool isLiked = 7;
 }
 
 message PostsArray {
@@ -40,21 +36,14 @@ message PostsArray {
 
 message CreatePostForm {
   string title = 1;
-  repeated bytes photos = 2;
-  repeated bytes videos = 3;
-  string text = 4;
-  string authorId = 5;
+  string contentDir = 2;
+  string authorId = 3;
 }
 
 message UpdatePostForm {
   string id = 1;
   string titile = 2;
-  string text = 3;
-  repeated bytes photos = 4;
-  repeated bytes videos = 5;
-  string authorId = 6;
-  repeated string delPhotos = 7;
-  repeated string delVideos = 8;
+  string authorId = 3;
 }
 
 message PostId {
@@ -73,12 +62,10 @@ message PostIdAndUserId {
 message Comment {
   string id = 1;
   string authorId = 2;
-  string text = 3;
   string likesNumber = 4;
-  bool isLiked = 5;
-  string answersNumber = 6;
-  repeated string photos = 7;
-  repeated string videos = 8;
+  string contentDir = 5;
+  bool isLiked = 6;
+  string answersNumber = 7;
 }
 
 message CommentsArray {
@@ -88,19 +75,8 @@ message CommentsArray {
 message CreateCommentForm {
   string postId = 1;
   string authorId = 2;
-  string text = 3;
-  string isAnswerFor = 4;
-  repeated bytes photos = 6;
-  repeated bytes videos = 7;
-}
-
-message UpdateCommentForm {
-  string id = 1;
-  string text = 2;
-  repeated bytes photos = 3;
-  repeated bytes videos = 4;
-  repeated string delPhotos = 5;
-  repeated string delVideos = 6;
+  string isAnswerFor = 3;
+  string contentDir = 4;
 }
 
 message CommentId {
@@ -117,16 +93,8 @@ message TagAndUserId {
   string userId = 2;
 }
 
-message FilePath {
-  string path = 1;
-}
-
-message Photo {
-  bytes photo = 1;
-}
-
-message Video {
-  bytes chunk = 1;
+message ContentDir {
+  string name = 1;
 }
 
 message Empty {}

@@ -1,13 +1,11 @@
 import { NestFactory } from "@nestjs/core";
 import { MicroserviceOptions, Transport } from "@nestjs/microservices";
 import { AppModule } from "./app.module";
-import { FilesService } from "./files/files.service";
 import { resolve } from "path";
 
 const URL = process.env.POSTS_SERVICE_URL;
-const filesService = new FilesService();
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule, 
     {
@@ -21,7 +19,6 @@ async function bootstrap() {
       },
     },
   );
-  await filesService.initialize();
   await app.listen();
   console.log(`Posts microservice is started on ${URL}`);
 }

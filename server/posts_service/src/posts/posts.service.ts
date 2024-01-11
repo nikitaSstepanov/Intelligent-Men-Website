@@ -137,7 +137,7 @@ export class PostsService implements IPostsService {
     }
 
     private async findTags(text: string): Promise<TagsEntiy[]> {
-        const tagsNames = await this.filesService.findTagsInText(text);
+        const tagsNames = await this.findTagsInText(text);
         const tagsArray: TagsEntiy[] = [];
         for (const tagName of tagsNames) {
             let tag = await this.tagsRepository.findOne({
@@ -151,6 +151,29 @@ export class PostsService implements IPostsService {
             tagsArray.push(tag);
         }
         return tagsArray;
+    }
+
+    async findTagsInText(text: string): Promise<string[]> {
+        const tags: string[] = [];
+        let isTag = false;
+        let tag = "";
+        for (const symbol of text) {
+            if (symbol === "#") {
+                isTag = true;
+            } else if (isTag === false) {
+                continue;
+            } else if (symbol != " ") {
+                tag += symbol;
+            } else if (symbol === " ") {
+                tags.push(tag);
+                isTag = false;
+                tag = "";
+            }
+        }
+        if (tag != "") {
+            tags.push(tag);
+        }
+        return tags;
     }
 
 }

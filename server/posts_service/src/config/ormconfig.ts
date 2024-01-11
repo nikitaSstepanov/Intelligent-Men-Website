@@ -2,18 +2,18 @@ import { DataSource } from "typeorm";
 import { ConfigService } from "@nestjs/config";
 import { resolve } from "path";
 import { config } from "dotenv";
-config({ path: "../.env" });
+config({ path: "../../.env" });
 
 const configService = new ConfigService();
 const dataSource = new DataSource({
     type: "postgres",
-    host: configService.get<string>("TYPEORM_POSTS_HOST"),
-    port: configService.get<number>("TYPEORM_POSTS_PORT"),
-    username: configService.get<string>("TYPEORM_POSTS_USERNAME"),
-    password: configService.get<string>("TYPEORM_POSTS_PASSWORD"),
-    database: configService.get<string>("TYPEORM_POSTS_DATABASE"),
+    host: configService.get<string>("POSTS_DB_HOST"),
+    port: configService.get<number>("POSTS_DB_PORT"),
+    username: configService.get<string>("POSTS_DB_USERNAME"),
+    password: configService.get<string>("POSTS_DB_PASSWORD"),
+    database: configService.get<string>("POSTS_DB_DATABASE"),
     synchronize: false,
-    entities: [resolve(__dirname, "..", "**", "**", "*.entity.js")],
+    entities: [resolve(__dirname, "..", "**", "**", "*.entity.ts")],
     migrations: [resolve(__dirname, "..", "migrations", "*.ts")],
     migrationsRun: false,
 });

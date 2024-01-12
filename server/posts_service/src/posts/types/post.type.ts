@@ -1,9 +1,7 @@
 type Post = {
     id: string;
     title: string;
-    photos: string[]; 
-    videos: string[];
-    text: string;
+    filesIds: string[];
     authorId: string;
     likesNumber: string;
     commentsNumber: string;

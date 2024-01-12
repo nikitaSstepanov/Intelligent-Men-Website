@@ -4,7 +4,7 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
 import { ConfigService } from "@nestjs/config";
 import { resolve } from "path";
 import { config } from "dotenv";
-config({ path: "../.env" });
+config({ path: "../../.env" });
 
 const configService = new ConfigService();
 const mailServiceUrl = configService.get<string>("MAIL_SERVICE_URL");

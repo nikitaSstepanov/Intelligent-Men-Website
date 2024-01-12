@@ -89,7 +89,7 @@ export class AuthService implements IAuthService {
             username: user.username, 
         };*/
         const activationMessageData = { 
-            email: "stepanova.irina.83@mail.ru", 
+            email: "ns_stepanov@inbox.ru", 
             username: "dfvfdgbghr",
             url: "dfgfghrjr"
         };

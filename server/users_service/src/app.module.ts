@@ -12,7 +12,7 @@ import { resolve } from "path";
 @Module({
     imports: [
         ConfigModule.forRoot({
-            envFilePath: "../.env",
+            envFilePath: "../../.env",
             isGlobal: true,
         }),
         TypeOrmModule.forRootAsync({

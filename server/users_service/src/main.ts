@@ -7,7 +7,6 @@ import { Seeder } from "./config/seed/seed.service";
 import { resolve } from "path";
 
 const URL = process.env.USERS_SERVICE_URL;
-const filesService = new FilesService();
 
 async function bootstrap(): Promise<void> {
     const app = await NestFactory.createMicroservice<MicroserviceOptions>(
@@ -25,8 +24,7 @@ async function bootstrap(): Promise<void> {
     );
     const seeder = app.get(Seeder);
     await seeder.seed();
-    await filesService.initialize();
-    await app.listen();
+    await app.listen()
     console.log(`Users microservice is started on ${URL}`);
 }
 

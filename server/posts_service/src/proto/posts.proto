@@ -38,6 +38,7 @@ message CreatePostForm {
   string title = 1;
   string contentDir = 2;
   string authorId = 3;
+  string text = 4;
 }
 
 message UpdatePostForm {

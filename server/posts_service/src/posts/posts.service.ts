@@ -68,7 +68,7 @@ export class PostsService implements IPostsService {
     async createPost(dto: CreatePostDto): Promise<Empty> {
         const post = new PostsEntity();
         post.title = dto.title;
-        post.contentDir = await this.filesService.saveFiles("posts", dto.text, dto.photos, dto.videos);
+        post.contentDir = dto.contentDir;
         post.authorId = Number(dto.authorId);
         post.tags = await this.findTags(dto.text);
         await this.postsRepository.save(post);
@@ -85,15 +85,9 @@ export class PostsService implements IPostsService {
         if (dto.authorId) {
             post.authorId = Number(dto.authorId);
         }
-        if (dto.delPhotos) {
-            await this.filesService.delFilesSeparatly(dto.delPhotos, "posts", post.contentDir, "photos");
-        }
-        if (dto.delVideos) {
-            await this.filesService.delFilesSeparatly(dto.delVideos, "posts", post.contentDir, "videos");
-        }
-        await this.filesService.updFiles("posts", post.contentDir, dto.text, dto.photos, dto.videos);
+        //TODO: Add text to find tags!!!!
         await this.postsRepository.save(post);
-        return {}; 
+        return { name: post.contentDir }; 
     }
 
     async delPost(dto: GetPostIdDto): Promise<Empty> {
@@ -104,10 +98,10 @@ export class PostsService implements IPostsService {
         for (const comment of post.comments) {
             await this.commentsLikesRepository.delete({ commentId: comment.id });
         }
-        await this.filesService.delFiles("posts", post.contentDir);
+        const contentDir = post.contentDir;
         await this.likesRepository.delete({ postId: post.id });
         await this.postsRepository.delete(Number(dto.postId));
-        return {};
+        return { name: contentDir };
     }
 
     private async preparePost(post: PostsEntity, userId: number): Promise<Post> {
@@ -121,13 +115,11 @@ export class PostsService implements IPostsService {
         if (like) {
             isLiked = true;
         }
-        const postFiles = await this.filesService.getFiles("posts", post.contentDir);
+        const filesIds = await this.filesService.getFilesIds({ mode: "posts", filesDir: post.contentDir });
         const readyPost: Post = {
             id: String(post.id),
             title: post.title,
-            text: postFiles.text,
-            photos: postFiles.photos,
-            videos: postFiles.videos,
+            filesIds,
             likesNumber: String(post.likesNumber),
             authorId: String(post.authorId),
             commentsNumber: String(post.commentsNumber),

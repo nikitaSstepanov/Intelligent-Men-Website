@@ -5,6 +5,5 @@ type CommentType = {
     likesNumber: string;
     isLiked: boolean;
     answersNumber?: string;
-    photos?: string[];
-    videos?: string[];
+    filesIds: string[];
 };

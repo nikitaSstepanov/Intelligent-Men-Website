@@ -57,7 +57,7 @@ export class CommentsService implements ICommentsService {
     async createComment(dto: CreateCommentDto): Promise<Empty> {
         const comment = new CommentsEntity();
         comment.authorId = Number(dto.authorId);
-        comment.contentDir = await this.filesService.saveFiles("comments", dto.text, dto.photos, dto.videos);
+        comment.contentDir = dto.contentDir;
         if (dto.isAnswerFor) {
             const recipient = await this.commentsRepository.findOne({
                 where: { id: Number(dto.isAnswerFor) },
@@ -78,15 +78,7 @@ export class CommentsService implements ICommentsService {
         const comment = await this.commentsRepository.findOne({
             where: { id: Number(dto.id) },
         });
-        const contentDir = comment.contentDir;
-        if (dto.delPhotos) {
-            await this.filesService.delFilesSeparatly(dto.delPhotos, "mode", contentDir, "photos");
-        }
-        if (dto.delVideos) {
-            await this.filesService.delFilesSeparatly(dto.delVideos, "mode", contentDir, "videos");
-        }
-        await this.filesService.updFiles( "comments", contentDir, dto.text, dto.photos, dto.videos);
-        return {};
+        return { name: comment.contentDir };
     }
 
     async delComment(dto: GetCommentIdDto): Promise<Empty> {
@@ -103,10 +95,10 @@ export class CommentsService implements ICommentsService {
         if (comment.answersNumber != 0) {
             await this.commentsRepository.delete({ isAnswerFor: comment.id });
         }
-        await this.filesService.delFiles("comments", comment.contentDir);
+        const contentDir = comment.contentDir;
         await this.commentsLikesRepository.delete({ commentId: comment.id });
         await this.commentsRepository.delete(comment.id);
-        return {};
+        return { name: contentDir };
     }
 
     private async prepareComment(comment: CommentsEntity, userId: number): Promise<CommentType> {
@@ -120,24 +112,16 @@ export class CommentsService implements ICommentsService {
         if (like) {
             isLiked = true;
         }
-        const commentFiles = await this.filesService.getFiles("comments", comment.contentDir);
+        const filesIds = await this.filesService.getFilesIds({ mode: "comments", filesDir: comment.contentDir });
         const readyComment: CommentType = {
             id: String(comment.id),
             authorId: String(comment.authorId),
             likesNumber: String(comment.likesNumber),
+            filesIds,
             isLiked,
         }
         if (comment.answersNumber != 0) {
             readyComment.answersNumber = String(comment.answersNumber);
-        }
-        if (commentFiles.text) {
-            readyComment.text = commentFiles.text;
-        }
-        if (commentFiles.photos) {
-            readyComment.photos = commentFiles.photos;
-        }
-        if (commentFiles.videos) {
-            readyComment.videos = commentFiles.videos;
         }
         return readyComment;
     }

@@ -1,0 +1,3 @@
+type FilesIds = {
+    ids: string[];
+};

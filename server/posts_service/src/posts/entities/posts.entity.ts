@@ -27,7 +27,7 @@ export class PostsEntity {
     comments: CommentsEntity[];
 
     @ManyToMany(() => TagsEntiy, (tag) => tag.posts, { onDelete: "NO ACTION", onUpdate: "NO ACTION" })
-    @JoinTable({ name: "posts_to_tags" })
+    @JoinTable({ name: "posts_to_tags"})
     tags: TagsEntiy[];
 
 }

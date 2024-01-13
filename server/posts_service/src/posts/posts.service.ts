@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { IPostsService } from "./interfaces/posts-service.interface";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { Check, Repository } from "typeorm";
 import { PostsEntity } from "./entities/posts.entity";
 import { LikesEntity } from "src/likes/entities/likes.entity";
 import { TagsEntiy } from "./entities/tags.entity";
@@ -97,13 +97,14 @@ export class PostsService implements IPostsService {
     async delPost(dto: GetPostIdDto): Promise<Empty> {
         const post = await this.postsRepository.findOne({
             where: { id: Number(dto.postId) },
-            relations: { comments: true },
+            relations: { comments: true, tags: true},
         });
         for (const comment of post.comments) {
             await this.commentsLikesRepository.delete({ commentId: comment.id });
-        }
+        } 
+        await this.filesService.deleteFiles({ mode: "posts", "filesDir": post.contentDir });
         await this.likesRepository.delete({ postId: post.id });
-        await this.postsRepository.delete(Number(dto.postId));
+        await this.postsRepository.remove(post);
         return {};
     }
 
@@ -187,7 +188,10 @@ export class PostsService implements IPostsService {
                 newTag.name = tagName;
                 tag = await this.tagsRepository.save(newTag);
             }
-            if (!tags.includes(tag)) {
+            const check = tags.some((t) => {
+                return t.name == tag.name;
+            });
+            if (!check) {
                 tags.push(tag);
             }
         }

@@ -95,10 +95,10 @@ export class CommentsService implements ICommentsService {
         if (comment.answersNumber != 0) {
             await this.commentsRepository.delete({ isAnswerFor: comment.id });
         }
-        const contentDir = comment.contentDir;
+        await this.filesService.deleteFiles({ mode: "comments", filesDir: comment.contentDir });
         await this.commentsLikesRepository.delete({ commentId: comment.id });
         await this.commentsRepository.delete(comment.id);
-        return { name: contentDir };
+        return {};
     }
 
     private async prepareComment(comment: CommentsEntity, userId: number): Promise<CommentType> {
@@ -117,9 +117,9 @@ export class CommentsService implements ICommentsService {
             id: String(comment.id),
             authorId: String(comment.authorId),
             likesNumber: String(comment.likesNumber),
-            filesIds,
+            filesIds: filesIds.ids,
             isLiked,
-        }
+        };
         if (comment.answersNumber != 0) {
             readyComment.answersNumber = String(comment.answersNumber);
         }

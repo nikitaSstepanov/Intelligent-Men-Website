@@ -67,7 +67,7 @@ message Comment {
   string id = 1;
   string authorId = 2;
   string likesNumber = 4;
-  string contentDir = 5;
+  repeated string filesIds = 5;
   bool isLiked = 6;
   string answersNumber = 7;
 }

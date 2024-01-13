@@ -1,16 +1,14 @@
 import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
 import { IFilesService } from "./interfaces/files-service.interface";
-import { existsSync, readFileSync, writeFileSync, mkdirSync, readdirSync, rmSync, createReadStream } from "fs";
-import { resolve, join } from "path";
-import { v4 } from "uuid";
-import { Observable, Subject, firstValueFrom } from "rxjs";
-import { GetPathDto } from "./dto/get-path.dto";
+import { firstValueFrom } from "rxjs";
 import { ClientGrpc } from "@nestjs/microservices";
+import { ModeAndNameDto } from "./dto/mode-and-name.dto";
+import { IFilesGrpcService } from "./interfaces/files-grpc-service.interface";
 
 @Injectable()
-export class FilesService implements OnModuleInit  {
+export class FilesService implements IFilesService, OnModuleInit  {
 
-    private filesGrpcService;
+    private filesGrpcService: IFilesGrpcService;
 
     constructor(
         @Inject("FILES_SERVICE")
@@ -18,14 +16,14 @@ export class FilesService implements OnModuleInit  {
     ) {}
 
     onModuleInit() {
-        this.filesGrpcService =  this.client.getService("FilesService");
+        this.filesGrpcService =  this.client.getService<IFilesGrpcService>("FilesService");
     }
 
-    async getFilesIds(dto): Promise<any> {
+    async getFilesIds(dto: ModeAndNameDto): Promise<FilesIds> {
         return await firstValueFrom(this.filesGrpcService.getFilesIds(dto));
     }
 
-    async deleteFiles(dto): Promise<Empty> {
+    async deleteFiles(dto: ModeAndNameDto): Promise<Empty> {
         return await firstValueFrom(this.filesGrpcService.deleteFiles(dto));
     }
 

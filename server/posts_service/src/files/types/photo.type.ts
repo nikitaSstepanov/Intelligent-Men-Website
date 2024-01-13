@@ -1,3 +1,0 @@
-type Photo = {
-    photo: Buffer;
-};

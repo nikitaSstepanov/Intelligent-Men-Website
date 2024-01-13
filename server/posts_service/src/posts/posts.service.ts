@@ -30,7 +30,11 @@ export class PostsService implements IPostsService {
     ) {}
 
     async findAllPosts(dto: GetUserIdDto): Promise<PostsArray> {
-        const posts = await this.postsRepository.find();
+        const posts = await this.postsRepository.find({
+            order: { id: "DESC" },
+            take: Number(dto.paginationLimit),
+            skip: (Number(dto.paginationPage) - 1) * Number(dto.paginationLimit),
+        });
         const result = { posts: [] };
         for (const post of posts) {
             const readyPost = await this.preparePost(post, Number(dto.userId));
@@ -118,7 +122,7 @@ export class PostsService implements IPostsService {
         const readyPost: Post = {
             id: String(post.id),
             title: post.title,
-            filesIds,
+            filesIds: filesIds.ids,
             likesNumber: String(post.likesNumber),
             authorId: String(post.authorId),
             commentsNumber: String(post.commentsNumber),

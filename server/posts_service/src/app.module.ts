@@ -23,7 +23,7 @@ import { resolve } from "path";
         password: configService.get<string>("POSTS_DB_PASSWORD"),
         database: configService.get<string>("POSTS_DB_DATABASE"),
         synchronize: false,
-        entities: [resolve(__dirname, "**", "entities", "*entity.ts")],
+        entities: [resolve(__dirname, "**", "entities", "*entity.js")],
       }),
       inject: [ConfigService],
     }),
@@ -31,6 +31,6 @@ import { resolve } from "path";
     CommentsModule,
     LikesModule,
     FilesModule,
-  ],
+  ]
 })
 export class AppModule {}

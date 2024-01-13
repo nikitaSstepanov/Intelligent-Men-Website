@@ -1,0 +1,3 @@
+type DirectoryName = {
+    name: string;
+};

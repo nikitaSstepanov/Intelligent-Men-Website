@@ -35,7 +35,7 @@ export class PostsController implements IPostsController {
     }
 
     @GrpcMethod("PostsService", "UpdatePost")
-    async updatePost(dto: UpdatePostDto): Promise<Empty> {
+    async updatePost(dto: UpdatePostDto): Promise<DirectoryName> {
         return await this.postsService.updPost(dto);
     }
 

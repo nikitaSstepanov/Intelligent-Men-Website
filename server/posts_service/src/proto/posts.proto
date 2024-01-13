@@ -8,12 +8,12 @@ service PostsService {
   rpc FindOnePost (PostIdAndUserId) returns (Post);
   rpc CreatePost (CreatePostForm) returns (Empty);
   rpc UpdatePost (UpdatePostForm) returns (ContentDir);
-  rpc DeletePost (PostId) returns (ContentDir);
+  rpc DeletePost (PostId) returns (Empty);
   rpc SendComments (PostIdAndUserId) returns (CommentsArray);
   rpc SendCommentAnswers (CommentIdAndUserId) returns (CommentsArray);
   rpc CreateComment (CreateCommentForm) returns (Empty);
   rpc UpdateComment (CommentId) returns (ContentDir);
-  rpc DeleteComment (CommentId) returns (ContentDir);
+  rpc DeleteComment (CommentId) returns (Empty);
   rpc AddLikeToPost (PostIdAndUserId) returns (Empty);
   rpc RemoveLikeFromPost (PostIdAndUserId) returns (Empty);
   rpc AddLikeToComment (CommentIdAndUserId) returns (Empty);
@@ -45,6 +45,7 @@ message UpdatePostForm {
   string id = 1;
   string titile = 2;
   string authorId = 3;
+  string text = 4;
 }
 
 message PostId {

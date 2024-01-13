@@ -75,7 +75,7 @@ export class PostsService implements IPostsService {
         return {};
     }
 
-    async updPost(dto: UpdatePostDto): Promise<Empty> {
+    async updPost(dto: UpdatePostDto): Promise<DirectoryName> {
         let post = await this.postsRepository.findOne({
             where: { id: Number(dto.id) },
         });
@@ -85,7 +85,7 @@ export class PostsService implements IPostsService {
         if (dto.authorId) {
             post.authorId = Number(dto.authorId);
         }
-        //TODO: Add text to find tags!!!!
+        await this.updTags(dto.text, post.id);
         await this.postsRepository.save(post);
         return { name: post.contentDir }; 
     }
@@ -98,10 +98,9 @@ export class PostsService implements IPostsService {
         for (const comment of post.comments) {
             await this.commentsLikesRepository.delete({ commentId: comment.id });
         }
-        const contentDir = post.contentDir;
         await this.likesRepository.delete({ postId: post.id });
         await this.postsRepository.delete(Number(dto.postId));
-        return { name: contentDir };
+        return {};
     }
 
     private async preparePost(post: PostsEntity, userId: number): Promise<Post> {
@@ -166,6 +165,30 @@ export class PostsService implements IPostsService {
             tags.push(tag);
         }
         return tags;
+    }
+
+    async updTags(text: string, postId: number): Promise<void> {
+        const newTags = await this.findTagsInText(text);
+        const post = await this.postsRepository.findOne({
+            where: { id: postId },
+            relations: { tags: true },
+        });
+        const tags = post.tags;
+        for (const tagName of newTags) {
+            let tag = await this.tagsRepository.findOne({
+                where: { name: tagName },
+            });
+            if (!tag) {
+                const newTag = new TagsEntiy();
+                newTag.name = tagName;
+                tag = await this.tagsRepository.save(newTag);
+            }
+            if (!tags.includes(tag)) {
+                tags.push(tag);
+            }
+        }
+        post.tags = tags;
+        await this.postsRepository.save(post);
     }
 
 }

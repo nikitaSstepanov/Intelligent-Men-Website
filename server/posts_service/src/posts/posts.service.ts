@@ -1,11 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { IPostsService } from "./interfaces/posts-service.interface";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Check, Repository } from "typeorm";
+import { Repository } from "typeorm";
 import { PostsEntity } from "./entities/posts.entity";
 import { LikesEntity } from "src/likes/entities/likes.entity";
 import { TagsEntiy } from "./entities/tags.entity";
-import { CommentsLikesEntity } from "../likes/entities/comments-likes.entity";
 import { FilesService } from "../files/files.service";
 import { GetUserIdDto } from "./dto/get-user-id.dto";
 import { GetTagAndUserIdDto } from "./dto/get-tag-and-user-id.dto";
@@ -13,6 +12,7 @@ import { GetPostIdAndUserIdDto } from "./dto/get-post-id-and-user-id.dto";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { UpdatePostDto } from "./dto/update-post.dto";
 import { GetPostIdDto } from "./dto/get-post-id.dto";
+import { CommentsService } from "src/comments/comments.service";
 
 @Injectable()
 export class PostsService implements IPostsService {
@@ -24,8 +24,7 @@ export class PostsService implements IPostsService {
         private readonly likesRepository: Repository<LikesEntity>,
         @InjectRepository(TagsEntiy)
         private readonly tagsRepository: Repository<TagsEntiy>,
-        @InjectRepository(CommentsLikesEntity)
-        private readonly commentsLikesRepository: Repository<CommentsLikesEntity>,
+        private readonly commentsService: CommentsService,
         private readonly filesService: FilesService,
     ) {}
 
@@ -100,7 +99,7 @@ export class PostsService implements IPostsService {
             relations: { comments: true, tags: true},
         });
         for (const comment of post.comments) {
-            await this.commentsLikesRepository.delete({ commentId: comment.id });
+            await this.commentsService.delComment({ commentId: String(comment.id) });
         } 
         await this.filesService.deleteFiles({ mode: "posts", "filesDir": post.contentDir });
         await this.likesRepository.delete({ postId: post.id });

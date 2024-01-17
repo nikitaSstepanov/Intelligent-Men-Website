@@ -14,7 +14,7 @@ const mailServiceUrl = configService.get<string>("MAIL_SERVICE_URL");
     imports: [
         ClientsModule.register([
             {
-                name: "MAIL",
+                name: "MAIL_SERVICE",
                 transport: Transport.GRPC,
                 options: {
                     package: "mail",

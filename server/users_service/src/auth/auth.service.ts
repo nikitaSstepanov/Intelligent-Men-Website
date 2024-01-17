@@ -74,7 +74,7 @@ export class AuthService implements IAuthService {
 
     async addUser(dto: RegistrationDto): Promise<Tokens> {
         const tokens: Tokens = { refreshToken: "", accessToken: "" };
-        /*const creationResult = await this.usersService.createUser(dto);
+        const creationResult = await this.usersService.createUser(dto);
         if (creationResult.errors.length != 0) {
             tokens.errors = creationResult.errors;
             return tokens;
@@ -87,16 +87,11 @@ export class AuthService implements IAuthService {
             url: user.activationUrl, 
             email: user.email, 
             username: user.username, 
-        };*/
-        const activationMessageData = { 
-            email: "ns_stepanov@inbox.ru", 
-            username: "dfvfdgbghr",
-            url: "dfgfghrjr"
         };
         await this.mailService.sendActivationMessage(activationMessageData);
-        /*const { refreshToken, accessToken } = await this.generateTokens(user);
+        const { refreshToken, accessToken } = await this.generateTokens(user);
         tokens.refreshToken = refreshToken;
-        tokens.accessToken = accessToken;*/
+        tokens.accessToken = accessToken;
         return tokens;
     }
 

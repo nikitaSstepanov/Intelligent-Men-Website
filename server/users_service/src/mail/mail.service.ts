@@ -10,15 +10,15 @@ import { firstValueFrom } from "rxjs";
 @Injectable()
 export class MailService implements IMailService, OnModuleInit {
 
-    private mailService;
+    private mailService: IGrpcMailService;
 
     constructor(
-        @Inject("MAIL")
+        @Inject("MAIL_SERVICE")
         private readonly client: ClientGrpc,
     ) {}
 
     onModuleInit() {
-        this.mailService = this.client.getService("MailService");
+        this.mailService = this.client.getService<IGrpcMailService>("MailService");
     }
 
     async sendActivationMessage(dto: ActivationDto): Promise<void> {
@@ -26,11 +26,11 @@ export class MailService implements IMailService, OnModuleInit {
     }
 
     async sendAdminRoleSetMessage(dto: AdminRoleMessageDto): Promise<void> {
-        await this.mailService.sendAdminRoleIsSettedMessage(dto);
+        await firstValueFrom(this.mailService.sendAdminRoleIsSettedMessage(dto));
     }
 
     async sendMemberRoleSetMessage(dto: MemberRoleMessageDto): Promise<void> {
-        await this.mailService.sendMemberRoleIsSettedMessage(dto);
+        await firstValueFrom(this.mailService.sendMemberRoleIsSettedMessage(dto));
     }
 
 }

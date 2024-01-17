@@ -31,6 +31,6 @@ import { resolve } from "path";
     CommentsModule,
     LikesModule,
     FilesModule,
-  ]
+  ],
 })
 export class AppModule {}

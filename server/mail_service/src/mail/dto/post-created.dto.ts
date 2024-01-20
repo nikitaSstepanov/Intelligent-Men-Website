@@ -1,4 +1,10 @@
+import { IsEmail } from "class-validator";
+
 export class PostCreatedDto {
-    readonly title: string;
+
+    @IsEmail({}, { message: "incorrect email" })
     readonly email: string;
+
+    readonly title: string;
+    
 }

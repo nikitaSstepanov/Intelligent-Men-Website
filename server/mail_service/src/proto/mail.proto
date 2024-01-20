@@ -26,8 +26,8 @@ message MemberRoleIsSetedMessageData {
 }
 
 message PostCreatedMessageData {
-    string title = 1;
-    string email = 2;
+    string email = 1;
+    string title = 2;
 }
 
 message Empty {}

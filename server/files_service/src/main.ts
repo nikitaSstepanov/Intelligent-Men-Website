@@ -3,6 +3,7 @@ import { MicroserviceOptions, Transport } from "@nestjs/microservices";
 import { AppModule } from "./app.module";
 import { FilesService } from "./files/files.service";
 import { resolve } from "path";
+import { ValidationPipe } from "./pipes/validation.pipe";
 
 const URL = process.env.FILES_SERVICE_URL;
 
@@ -22,6 +23,7 @@ async function bootstrap(): Promise<void> {
     );
     const filesService = app.get(FilesService);
     await filesService.initialize();
+    app.useGlobalPipes(new ValidationPipe());
     await app.listen();
     console.log(`Files microservice is started on ${URL}`);
 }

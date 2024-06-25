@@ -2,8 +2,78 @@ syntax = "proto3";
 
 package users;
 
-option go_package = "github.com/nikitaSstepanov/Intelligent-Men-Website/backend/users_service/protobuf"
+option go_package = "github.com/nikitaSstepanov/Intelligent-Men-Website/backend/users_service/protobuf";
+//Generate command: protoc -I protobuf protobuf/users.proto --go_out=./protobuf --go_opt=paths=source_relative --go-grpc_out=./protobuf --go-grpc_opt=paths=source_relative
 
 service UsersService {
-
+    rpc GetOwnProfile (AccessToken) returns (Profile);
+    rpc GetProfile (UserId) returns (Profile);
+    rpc Registration (UserData) returns (Tokens);
+    rpc UpdateAccount (UpdateUserData) returns (Empty);
+    rpc DeleteAccount (AccessToken) returns (Empty);
+    rpc ActivateAccount (ActivationUrl) returns (Empty);
+    rpc CancelRegistration (ActivationUrl) returns (Empty);
+    rpc Login (LoginData) returns (Tokens);
+    rpc Logout (RefreshToken) returns (Empty);
+    rpc Refresh (RefreshToken) returns (Tokens);
+    rpc CheckAccess (CheckAccessData) returns (UserId);
 }
+
+// Request messages
+
+message UserData {
+    string email = 1;
+    string username = 2;
+    string password = 3;
+    string photoPath = 4;
+}
+
+message UpdateUserData {
+    string email = 1;
+    string username = 2;
+    string password = 3;
+    string oldPass = 4;
+    string photoPath = 5;
+    string access = 6;
+}
+
+message LoginData {
+    string email = 1;
+    string password = 2;
+}
+
+message RefreshToken {
+    string refresh = 1;
+}
+
+message AccessToken {
+    string access = 1;
+}
+
+message CheckAccessData {
+    string token = 1;
+    repeated string roles = 2;
+}
+
+message ActivationUrl {
+    string url = 1;
+}
+
+// Response messages
+
+message Profile {
+    string username = 1;
+    string email = 2;
+    string photoPath = 3;
+}
+
+message UserId {
+    uint64 id = 1;
+}
+
+message Tokens {
+    string access = 1;
+    string refresh = 2;
+}
+
+message Empty {}

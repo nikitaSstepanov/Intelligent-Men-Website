@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package files;
+
+service FilesService {
+    rpc GetFilesIds (Path) returns (FilesIds);
+    rpc SaveFiles (SaveFilesForm) returns (Path);
+    rpc UpdateDirectory (UpdateFilesForm) returns (Empty);
+    rpc DeleteFiles (Path) returns (Empty);
+    rpc SendFile (FileId) returns (File);
+    rpc SendFileStream (FileId) returns (stream Chunk);
+}
+
+message SaveFilesForm {
+    string mode = 1;
+    string text = 2;
+    repeated File files = 3;
+}
+
+message UpdateFilesForm {
+    string path = 1;
+    string text = 2;
+    repeated File newFiles = 3;
+    repeated string filesToDel = 4;
+}
+
+message FilesIds {
+    repeated uint64 ids = 1;
+}
+
+message Path {
+    string path = 1;
+}
+
+message FileId {
+    uint64 id = 1;
+}
+
+message File {
+    bytes file = 1;
+}
+
+message Chunk {
+    bytes chunk = 1;
+}
+
+message Empty {}

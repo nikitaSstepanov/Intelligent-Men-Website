@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package users;
+
+option go_package = "github.com/nikitaSstepanov/Intelligent-Men-Website/backend/users_service/protobuf"
+
+service UsersService {
+
+}

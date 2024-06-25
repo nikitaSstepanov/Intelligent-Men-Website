@@ -1,0 +1,6 @@
+**/node_modules
+**/dist
+**/.DS_Store
+**/pgdata
+files_service/files
+.env

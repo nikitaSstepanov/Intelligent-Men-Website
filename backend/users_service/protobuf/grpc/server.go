@@ -28,16 +28,18 @@ func NewServer(handler Handler, cfg *Config) *Server {
 }
 
 func (s *Server) Start() error {
+	var err error
+	
 	listener, err := net.Listen("tcp", s.url)
 	if err != nil {
 		return err
 	}
 
-	if err := s.server.Serve(listener); err != nil {
-		return err
-	}
+	go func() {
+		err = s.server.Serve(listener)
+	}()
 
-	return nil
+	return err
 }
 
 func (s *Server) Stop() {

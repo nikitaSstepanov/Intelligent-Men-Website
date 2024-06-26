@@ -7,11 +7,9 @@ import (
 
 type Controller struct {
 	protobuf.UnimplementedUsersServiceServer
-	usecase *uc.UseCase
 }
 
 func New(usecase *uc.UseCase) *Controller {
 	return &Controller{
-		usecase: usecase,
 	}
 }

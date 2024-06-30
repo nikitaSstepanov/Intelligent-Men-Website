@@ -7,6 +7,10 @@ logger:
     is_json: true
     set_default: true
 
+jwt:
+    issuer: "im_users_service"
+    audience: ["clients"]
+
 postgres:
     host: "localhost"
     port: "5432"

@@ -2,14 +2,16 @@ syntax = "proto3";
 
 package users;
 
-option go_package = "github.com/nikitaSstepanov/Intelligent-Men-Website/backend/users_service/protobuf";
-//Generate command: protoc -I protobuf protobuf/users.proto --go_out=./protobuf --go_opt=paths=source_relative --go-grpc_out=./protobuf --go-grpc_opt=paths=source_relative
+option go_package = "github.com/nikitaSstepanov/Intelligent-Men-Website/backend/users_service/protobuf/users";
+//Generate command: protoc -I protobuf/users protobuf/users/users.proto --go_out=./protobuf/users --go_opt=paths=source_relative --go-grpc_out=./protobuf/users --go-grpc_opt=paths=source_relative
 
 service UsersService {
     rpc GetOwnProfile (AccessToken) returns (Profile);
     rpc GetProfile (UserId) returns (Profile);
     rpc Registration (UserData) returns (Tokens);
     rpc UpdateAccount (UpdateUserData) returns (Empty);
+    rpc SetRole (ChangeRoleData) returns (Empty);
+    rpc RevokeRole (ChangeRoleData) returns (Empty);
     rpc DeleteAccount (AccessToken) returns (Empty);
     rpc ActivateAccount (ActivationUrl) returns (Empty);
     rpc CancelRegistration (ActivationUrl) returns (Empty);
@@ -35,6 +37,11 @@ message UpdateUserData {
     string oldPass = 4;
     string photoPath = 5;
     string access = 6;
+}
+
+message ChangeRoleData {
+    string email = 1;
+    string role = 2;
 }
 
 message LoginData {

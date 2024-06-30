@@ -3,6 +3,7 @@ package app
 import (
 	"github.com/ilyakaznacheev/cleanenv"
 	"github.com/joho/godotenv"
+	"github.com/nikitaSstepanov/Intelligent-Men-Website/backend/users_service/internal/usecase/auth"
 	"github.com/nikitaSstepanov/Intelligent-Men-Website/backend/users_service/pkg/client/postgresql"
 	"github.com/nikitaSstepanov/Intelligent-Men-Website/backend/users_service/pkg/client/redis"
 	"github.com/nikitaSstepanov/Intelligent-Men-Website/backend/users_service/pkg/logging"
@@ -10,8 +11,9 @@ import (
 )
 
 type AppConfig struct {
-	Server   grpc.Config       `yaml:"server"`
+	Server   grpc.ServerConfig       `yaml:"server"`
 	Logger   logging.Config	   `yaml:"logger"`
+	Jwt      auth.JwtOptions   `yaml:"jwt"`
 	Postgres postgresql.Config `yaml:"postgres"`
 	Redis    redis.Config      `yaml:"redis"`
 }

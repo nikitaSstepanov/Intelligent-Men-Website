@@ -2,12 +2,16 @@ syntax = "proto3";
 
 package mail;
 
+option go_package = "github.com/nikitaSstepanov/Intelligent-Men-Website/backend/users_service/protobuf/mail";
+//Generate command: protoc -I protobuf/mail protobuf/mail/mail.proto --go_out=./protobuf/mail --go_opt=paths=source_relative --go-grpc_out=./protobuf/mail --go-grpc_opt=paths=source_relative
+
 service MailService {
     rpc SendActivatonMessage (ActivationMessageData) returns (Empty);
     rpc SendAdminRoleIsSettedMessage (RoleIsSetedMessageData) returns (Empty);
     rpc SendMemberRoleIsSettedMessage (RoleIsSetedMessageData) returns (Empty);
-    rpc SendPostCreatedMessage (PostCreatedMessageData) returns (Empty);
 }
+
+//Request messages
 
 message ActivationMessageData {
     string email = 1;
@@ -20,9 +24,6 @@ message RoleIsSetedMessageData {
     string username = 2;
 }
 
-message PostCreatedMessageData {
-    string email = 1;
-    string title = 2;
-}
+//Response messages
 
 message Empty {}

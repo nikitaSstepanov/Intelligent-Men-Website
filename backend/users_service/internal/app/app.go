@@ -60,7 +60,7 @@ func New() *App {
 
 	app.storage = storage.New(pg, redisConn)
 
-	app.usecase = usecase.New(app.storage)
+	app.usecase = usecase.New(app.storage, &cfg.Jwt)
 
 	app.controller = controller.New(app.usecase)
 

@@ -3,7 +3,7 @@ package grpc
 import (
 	"net"
 
-	"github.com/nikitaSstepanov/Intelligent-Men-Website/backend/users_service/protobuf"
+	protobuf "github.com/nikitaSstepanov/Intelligent-Men-Website/backend/users_service/protobuf/users"
 	grpcpkg "google.golang.org/grpc"
 )
 
@@ -12,11 +12,11 @@ type Server struct {
 	url    string
 }
 
-type Config struct {
+type ServerConfig struct {
 	Url string `yaml:"url"`
 }
 
-func NewServer(handler Handler, cfg *Config) *Server {
+func NewServer(handler Handler, cfg *ServerConfig) *Server {
 	gRPCServer := grpcpkg.NewServer()
 
 	protobuf.RegisterUsersServiceServer(gRPCServer, handler)

@@ -4,7 +4,7 @@
 // - protoc             v5.27.1
 // source: users.proto
 
-package protobuf
+package users
 
 import (
 	context "context"
@@ -23,6 +23,8 @@ const (
 	UsersService_GetProfile_FullMethodName         = "/users.UsersService/GetProfile"
 	UsersService_Registration_FullMethodName       = "/users.UsersService/Registration"
 	UsersService_UpdateAccount_FullMethodName      = "/users.UsersService/UpdateAccount"
+	UsersService_SetRole_FullMethodName            = "/users.UsersService/SetRole"
+	UsersService_RevokeRole_FullMethodName         = "/users.UsersService/RevokeRole"
 	UsersService_DeleteAccount_FullMethodName      = "/users.UsersService/DeleteAccount"
 	UsersService_ActivateAccount_FullMethodName    = "/users.UsersService/ActivateAccount"
 	UsersService_CancelRegistration_FullMethodName = "/users.UsersService/CancelRegistration"
@@ -40,6 +42,8 @@ type UsersServiceClient interface {
 	GetProfile(ctx context.Context, in *UserId, opts ...grpc.CallOption) (*Profile, error)
 	Registration(ctx context.Context, in *UserData, opts ...grpc.CallOption) (*Tokens, error)
 	UpdateAccount(ctx context.Context, in *UpdateUserData, opts ...grpc.CallOption) (*Empty, error)
+	SetRole(ctx context.Context, in *ChangeRoleData, opts ...grpc.CallOption) (*Empty, error)
+	RevokeRole(ctx context.Context, in *ChangeRoleData, opts ...grpc.CallOption) (*Empty, error)
 	DeleteAccount(ctx context.Context, in *AccessToken, opts ...grpc.CallOption) (*Empty, error)
 	ActivateAccount(ctx context.Context, in *ActivationUrl, opts ...grpc.CallOption) (*Empty, error)
 	CancelRegistration(ctx context.Context, in *ActivationUrl, opts ...grpc.CallOption) (*Empty, error)
@@ -91,6 +95,26 @@ func (c *usersServiceClient) UpdateAccount(ctx context.Context, in *UpdateUserDa
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Empty)
 	err := c.cc.Invoke(ctx, UsersService_UpdateAccount_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *usersServiceClient) SetRole(ctx context.Context, in *ChangeRoleData, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, UsersService_SetRole_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *usersServiceClient) RevokeRole(ctx context.Context, in *ChangeRoleData, opts ...grpc.CallOption) (*Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, UsersService_RevokeRole_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -175,6 +199,8 @@ type UsersServiceServer interface {
 	GetProfile(context.Context, *UserId) (*Profile, error)
 	Registration(context.Context, *UserData) (*Tokens, error)
 	UpdateAccount(context.Context, *UpdateUserData) (*Empty, error)
+	SetRole(context.Context, *ChangeRoleData) (*Empty, error)
+	RevokeRole(context.Context, *ChangeRoleData) (*Empty, error)
 	DeleteAccount(context.Context, *AccessToken) (*Empty, error)
 	ActivateAccount(context.Context, *ActivationUrl) (*Empty, error)
 	CancelRegistration(context.Context, *ActivationUrl) (*Empty, error)
@@ -200,6 +226,12 @@ func (UnimplementedUsersServiceServer) Registration(context.Context, *UserData) 
 }
 func (UnimplementedUsersServiceServer) UpdateAccount(context.Context, *UpdateUserData) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAccount not implemented")
+}
+func (UnimplementedUsersServiceServer) SetRole(context.Context, *ChangeRoleData) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetRole not implemented")
+}
+func (UnimplementedUsersServiceServer) RevokeRole(context.Context, *ChangeRoleData) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RevokeRole not implemented")
 }
 func (UnimplementedUsersServiceServer) DeleteAccount(context.Context, *AccessToken) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAccount not implemented")
@@ -303,6 +335,42 @@ func _UsersService_UpdateAccount_Handler(srv interface{}, ctx context.Context, d
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UsersServiceServer).UpdateAccount(ctx, req.(*UpdateUserData))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UsersService_SetRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeRoleData)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServiceServer).SetRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UsersService_SetRole_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServiceServer).SetRole(ctx, req.(*ChangeRoleData))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UsersService_RevokeRole_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangeRoleData)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UsersServiceServer).RevokeRole(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UsersService_RevokeRole_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UsersServiceServer).RevokeRole(ctx, req.(*ChangeRoleData))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -455,6 +523,14 @@ var UsersService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateAccount",
 			Handler:    _UsersService_UpdateAccount_Handler,
+		},
+		{
+			MethodName: "SetRole",
+			Handler:    _UsersService_SetRole_Handler,
+		},
+		{
+			MethodName: "RevokeRole",
+			Handler:    _UsersService_RevokeRole_Handler,
 		},
 		{
 			MethodName: "DeleteAccount",
